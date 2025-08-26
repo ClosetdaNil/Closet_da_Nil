@@ -1,34 +1,82 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <header class="top-bar">
-  <img src="closet.jpg" alt="Logo da Loja Rosê" class="logo">
-</header>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loja Rosê</title>
   <link rel="stylesheet" href="styles.css">
   <script>
-    let carrinho = [];
+    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+    let cliques = JSON.parse(localStorage.getItem("cliques")) || {};
 
+    const produtos = {
+      "Vestido Afrodite": { preco: "R$ 54,99", img: "vestido afrodite.jpg" },
+      "Vestido Flor": { preco: "R$ 149,99", img: "vestido flor.jpg" },
+      "Vestido Tânia": { preco: "R$ 110,00", img: "vestido-tania-preto.jpg" },
+      "Conjunto Luma": { preco: "R$ 119,99", img: "conjunto luma.jpg" },
+      "Vestido Vitrine": { preco: "R$ 99,99", img: "vestido vitrine.jpg" },
+      "Conjunto Só Love": { preco: "R$ 84,99", img: "conjunto love.jpg" },
+      "Conjunto Tip": { preco: "R$ 54,99", img: "conjunto tip.jpg" }
+    };
 
+    // Carrinho
     function adicionarAoCarrinho(nome) {
       carrinho.push(nome);
+      salvarCarrinho();
       atualizarCarrinho();
     }
 
+    function salvarCarrinho() {
+      localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    }
+
     function atualizarCarrinho() {
-      const lista = document.getElementById("lista-carrinho");
+      const lista = document.getElementById("dropdown-carrinho");
       lista.innerHTML = "";
-      carrinho.forEach(item => {
+      carrinho.forEach((item, index) => {
         const li = document.createElement("li");
-        li.innerText = item;
+        li.innerHTML = `
+          <img src="${produtos[item].img}" alt="${item}" class="mini-img">
+          <span>${item} - ${produtos[item].preco}</span>
+          <button class="remove-button" onclick="removerDoCarrinho(${index})">❌</button>
+        `;
         lista.appendChild(li);
       });
 
-      const link = document.getElementById("finalizar-compra");
-      const texto = encodeURIComponent("Olá! Quero finalizar a compra dos seguintes Produtos: " + carrinho.join(", "));
-      link.href = "https://wa.me/5563992887772?text=" + texto;
+      if (carrinho.length > 0) {
+        const liFinal = document.createElement("li");
+        liFinal.innerHTML = `<button class="buy-button" onclick="finalizarCarrinho()">Finalizar Compra</button>`;
+        lista.appendChild(liFinal);
+      }
+
+      document.getElementById("carrinho-count").innerText = carrinho.length;
+    }
+
+    function removerDoCarrinho(index) {
+      carrinho.splice(index, 1);
+      salvarCarrinho();
+      atualizarCarrinho();
+    }
+
+    function finalizarCarrinho() {
+      if (carrinho.length === 0) {
+        alert("Carrinho vazio!");
+        return;
+      }
+      const texto = encodeURIComponent("Olá! Quero finalizar a compra dos seguintes produtos: " + carrinho.join(", "));
+      carrinho = [];
+      salvarCarrinho();
+      atualizarCarrinho();
+      window.open("https://wa.me/5563992887772?text=" + texto, "_blank");
+    }
+
+    // Contador de cliques
+    function contarClique(nome) {
+      if (!cliques[nome]) cliques[nome] = 0;
+      cliques[nome]++;
+      localStorage.setItem("cliques", JSON.stringify(cliques));
+      const contador = document.getElementById("contador-" + nome);
+      if (contador) contador.innerText = "👀 " + cliques[nome] + " cliques";
     }
 
     function trocarImagemVestidoTania(cor) {
@@ -41,20 +89,39 @@
         imagem.setAttribute('alt', 'Vestido Tânia Marrom');
       }
     }
+
+    function toggleCarrinho() {
+      const dropdown = document.getElementById("dropdown-carrinho");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    window.onload = function() {
+      atualizarCarrinho();
+      for (let nome in cliques) {
+        const contador = document.getElementById("contador-" + nome);
+        if (contador) contador.innerText = "👀 " + cliques[nome] + " cliques";
+      }
+    }
   </script>
 </head>
 <body>
   <header class="top-bar">
-    <h1>Closet Da Nil💕 </h1>
+    <img src="closet.jpg" alt="Logo da Loja Rosê" class="logo">
+    <h1>Closet Da Nil💕</h1>
+    <div class="icons">
+      <div class="icon-wrapper" onclick="toggleCarrinho()">
+        🛒 <span id="carrinho-count" class="badge">0</span>
+        <ul id="dropdown-carrinho" class="dropdown"></ul>
+      </div>
+    </div>
   </header>
 
   <div class="section">
     <h2>🛍️ Nossos Produtos✨</h2>
     <div class="container">
 
-
       <div class="block">
-        <img src="vestido afrodite.jpg" alt="Vestido Afrodite" class="block-image">
+        <img src="vestido afrodite.jpg" alt="Vestido Afrodite" class="block-image" onclick="contarClique('Vestido Afrodite')">
         <p>Vestido Afrodite</p>
         <span class="preco">R$ 54,99</span>
         <button onclick="adicionarAoCarrinho('Vestido Afrodite')" class="buy-button">Adicionar ao carrinho</button><br>
@@ -62,7 +129,7 @@
       </div>
 
       <div class="block">
-        <img src="vestido flor.jpg" alt="Vestido Flor" class="block-image">
+        <img src="vestido flor.jpg" alt="Vestido Flor" class="block-image" onclick="contarClique('Vestido Flor')">
         <p>Vestido Flor</p>
         <span class="preco">R$ 149,99</span>
         <button onclick="adicionarAoCarrinho('Vestido Flor')" class="buy-button">Adicionar ao carrinho</button><br>
@@ -70,19 +137,17 @@
       </div>
 
       <div class="block">
-        <img src="vestido-tania-preto.jpg" alt="Vestido Tânia Preto" id="imagem-tania" class="block-image">
+        <img src="vestido-tania-marrom.jpg" alt="Vestido Tânia marrom" id="imagem-tania" class="block-image" onclick="contarClique('Vestido Tânia')">
         <p>Vestido Tânia</p>
         <span class="preco">R$ 110,00</span>
         <div class="opcoes-cor">
-          <label><input type="radio" name="cor-tania" value="preto" checked onclick="trocarImagemVestidoTania('preto')"> Preto</label>
-          <label><input type="radio" name="cor-tania" value="marrom" onclick="trocarImagemVestidoTania('marrom')"> Marrom</label>
         </div>
         <button onclick="adicionarAoCarrinho('Vestido Tânia')" class="buy-button">Adicionar ao carrinho</button><br>
         <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Vestido Tânia. Qual cor está disponível?" target="_blank">Comprar</a>
       </div>
 
       <div class="block">
-        <img src="conjunto luma.jpg" alt="Conjunto Luma" class="block-image">
+        <img src="conjunto luma.jpg" alt="Conjunto Luma" class="block-image" onclick="contarClique('Conjunto Luma')">
         <p>Conjunto Luma</p>
         <span class="preco">R$ 119,99</span>
         <button onclick="adicionarAoCarrinho('Conjunto Luma')" class="buy-button">Adicionar ao carrinho</button><br>
@@ -90,45 +155,23 @@
       </div>
 
       <div class="block">
-        <img src="vestido vitrine.jpg" alt="Vestido Vitrine" class="block-image">
+        <img src="vestido vitrine.jpg" alt="Vestido Vitrine" class="block-image" onclick="contarClique('Vestido Vitrine')">
         <p>Vestido Vitrine</p>
         <span class="preco">R$ 99,99</span>
         <button onclick="adicionarAoCarrinho('Vestido Vitrine')" class="buy-button">Adicionar ao carrinho</button><br>
         <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Vestido Vitrine." target="_blank">Comprar</a>
       </div>
 
+
       <div class="block">
-  <img src="conjunto love.jpg" alt="Conjunto Só Love" class="block-image">
-  <p>Conjunto Só Love</p>
-  <span class="preco">R$ 84,99</span>
-  <button onclick="adicionarAoCarrinho('Conjunto Só Love')" class="buy-button">Adicionar ao carrinho</button><br>
-  <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Conjunto Só Love." target="_blank">Comprar</a>
-</div>
-
-<div class="block">
-  <img src="vestido india.jpg" alt="Vestido Índia" class="block-image">
-  <p>Vestido Índia</p>
-  <small>Disponível na cor marrom.</small>
-  <span class="preco">R$ 74,99</span>
-  <button onclick="adicionarAoCarrinho('Vestido Índia')" class="buy-button">Adicionar ao carrinho</button><br>
-  <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Vestido Índia." target="_blank">Comprar</a>
-</div>
-
-<div class="block">
-  <img src="conjunto tip.jpg" alt="Conjunto Tip" class="block-image">
-  <p>Conjunto Tip</p>
-  <span class="preco">R$ 54,99</span>
-  <button onclick="adicionarAoCarrinho('Conjunto Tip')" class="buy-button">Adicionar ao carrinho</button><br>
-  <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Conjunto Tip." target="_blank">Comprar</a>
-</div>
+        <img src="conjunto tip.jpg" alt="Conjunto Tip" class="block-image" onclick="contarClique('Conjunto Tip')">
+        <p>Conjunto Tip</p>
+        <span class="preco">R$ 54,99</span>
+        <button onclick="adicionarAoCarrinho('Conjunto Tip')" class="buy-button">Adicionar ao carrinho</button><br>
+        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Conjunto Tip." target="_blank">Comprar</a>
+      </div>
 
     </div>
-  </div>
-
-  <div class="section">
-    <h2>🛒 Carrinho de Compras</h2>
-    <ul id="lista-carrinho" style="list-style: none; padding: 0; margin-bottom: 20px;"></ul>
-    <a id="finalizar-compra" class="buy-button" href="#" target="_blank">Finalizar Compra</a>
   </div>
 
   <footer class="footer">
