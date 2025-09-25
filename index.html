@@ -1,194 +1,334 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loja Rosê</title>
-  <link rel="stylesheet" href="styles.css">
-  <script>
-    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-    let cliques = JSON.parse(localStorage.getItem("cliques")) || {};
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closet Da Nil💕</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Estilo base já fornecido pelo usuário */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff6fb;
+  margin: 0;
+  padding: 0;
+}
 
-    const produtos = {
-      "Vestido Afrodite": { preco: "R$ 54,99", img: "vestido afrodite.jpg" },
-      "Vestido Flor": { preco: "R$ 149,99", img: "vestido flor.jpg" },
-      "Vestido Tânia": { preco: "R$ 110,00", img: "vestido-tania-preto.jpg" },
-      "Conjunto Luma": { preco: "R$ 119,99", img: "conjunto luma.jpg" },
-      "Vestido Vitrine": { preco: "R$ 99,99", img: "vestido vitrine.jpg" },
-      "Conjunto Só Love": { preco: "R$ 84,99", img: "conjunto love.jpg" },
-      "Conjunto Tip": { preco: "R$ 54,99", img: "conjunto tip.jpg" }
-    };
+.logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: block;
+  margin: 10px auto;
+}
 
-    // Carrinho
-    function adicionarAoCarrinho(nome) {
-      carrinho.push(nome);
-      salvarCarrinho();
-      atualizarCarrinho();
-    }
+.top-bar {
+  background-color: #ff99cc;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+}
 
-    function salvarCarrinho() {
-      localStorage.setItem("carrinho", JSON.stringify(carrinho));
-    }
+.top-bar h1 {
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+}
 
-    function atualizarCarrinho() {
-      const lista = document.getElementById("dropdown-carrinho");
-      lista.innerHTML = "";
-      carrinho.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <img src="${produtos[item].img}" alt="${item}" class="mini-img">
-          <span>${item} - ${produtos[item].preco}</span>
-          <button class="remove-button" onclick="removerDoCarrinho(${index})">❌</button>
-        `;
-        lista.appendChild(li);
-      });
+/* Ícones do carrinho */
+.icons {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+}
 
-      if (carrinho.length > 0) {
-        const liFinal = document.createElement("li");
-        liFinal.innerHTML = `<button class="buy-button" onclick="finalizarCarrinho()">Finalizar Compra</button>`;
-        lista.appendChild(liFinal);
-      }
+.icon-wrapper {
+  position: relative;
+  cursor: pointer;
+  color: white;
+  font-size: 1.5rem;
+}
 
-      document.getElementById("carrinho-count").innerText = carrinho.length;
-    }
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #d63384;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
 
-    function removerDoCarrinho(index) {
-      carrinho.splice(index, 1);
-      salvarCarrinho();
-      atualizarCarrinho();
-    }
+/* Dropdown do carrinho */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: white;
+  color: black;
+  width: 300px;
+  max-height: 350px;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  list-style: none;
+  z-index: 1000;
+}
 
-    function finalizarCarrinho() {
-      if (carrinho.length === 0) {
-        alert("Carrinho vazio!");
-        return;
-      }
-      const texto = encodeURIComponent("Olá! Quero finalizar a compra dos seguintes produtos: " + carrinho.join(", "));
-      carrinho = [];
-      salvarCarrinho();
-      atualizarCarrinho();
-      window.open("https://wa.me/5563992887772?text=" + texto, "_blank");
-    }
+.dropdown li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
-    // Contador de cliques
-    function contarClique(nome) {
-      if (!cliques[nome]) cliques[nome] = 0;
-      cliques[nome]++;
-      localStorage.setItem("cliques", JSON.stringify(cliques));
-      const contador = document.getElementById("contador-" + nome);
-      if (contador) contador.innerText = "👀 " + cliques[nome] + " cliques";
-    }
+.mini-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 10px;
+}
 
-    function trocarImagemVestidoTania(cor) {
-      const imagem = document.getElementById("imagem-tania");
-      if (cor === 'preto') {
-        imagem.setAttribute('src', 'vestido-tania-preto.jpg');
-        imagem.setAttribute('alt', 'Vestido Tânia Preto');
-      } else if (cor === 'marrom') {
-        imagem.setAttribute('src', 'vestido-tania-marrom.jpg');
-        imagem.setAttribute('alt', 'Vestido Tânia Marrom');
-      }
-    }
+.remove-button {
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
 
-    function toggleCarrinho() {
-      const dropdown = document.getElementById("dropdown-carrinho");
-      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    }
+.remove-button:hover {
+  background-color: #e055a0;
+}
 
-    window.onload = function() {
-      atualizarCarrinho();
-      for (let nome in cliques) {
-        const contador = document.getElementById("contador-" + nome);
-        if (contador) contador.innerText = "👀 " + cliques[nome] + " cliques";
-      }
-    }
-  </script>
+/* Seção de produtos */
+.section {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.block {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 260px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.block img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.block p {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.preco {
+  display: block;
+  font-size: 1rem;
+  color: #d63384;
+  margin-bottom: 10px;
+}
+
+.buy-button {
+  display: inline-block;
+  background-color: #ff69b4;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.buy-button:hover {
+  background-color: #e055a0;
+}
+
+.footer {
+  background-color: #ff99cc;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer a {
+  color: white;
+  text-decoration: underline;
+}
+</style>
 </head>
 <body>
-  <header class="top-bar">
-    <img src="closet.jpg" alt="Logo da Loja Rosê" class="logo">
-    <h1>Closet Da Nil💕</h1>
-    <div class="icons">
-      <div class="icon-wrapper" onclick="toggleCarrinho()">
-        🛒 <span id="carrinho-count" class="badge">0</span>
-        <ul id="dropdown-carrinho" class="dropdown"></ul>
-      </div>
-    </div>
-  </header>
 
-  <div class="section">
-    <h2>🛍️ Nossos Produtos✨</h2>
-    <div class="container">
-
-      <div class="block">
-        <img src="vestido flor.jpg" alt="Vestido Flor" class="block-image" onclick="contarClique('Vestido Flor')">
-        <p>Vestido Flor</p>
-        <span class="preco">R$ 149,99</span>
-        <button onclick="adicionarAoCarrinho('Vestido Flor')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Vestido Flor." target="_blank">Comprar</a>
-      </div>
-      
-      <div class="block">
-        <img src="conjunto luma.jpg" alt="Conjunto Luma" class="block-image" onclick="contarClique('Conjunto Luma')">
-        <p>Conjunto Luma</p>
-        <span class="preco">R$ 119,99</span>
-        <button onclick="adicionarAoCarrinho('Conjunto Luma')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Conjunto Luma." target="_blank">Comprar</a>
-      </div>
-
-      <div class="block">
-        <img src="vestido vitrine.jpg" alt="Vestido Vitrine" class="block-image" onclick="contarClique('Vestido Vitrine')">
-        <p>Vestido Vitrine</p>
-        <span class="preco">R$ 99,99</span>
-        <button onclick="adicionarAoCarrinho('Vestido Vitrine')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Vestido Vitrine." target="_blank">Comprar</a>
-      </div>
-
-
-      <div class="block">
-        <img src="conjunto tip.jpg" alt="Conjunto Tip" class="block-image" onclick="contarClique('Conjunto Tip')">
-        <p>Conjunto Tip</p>
-        <span class="preco">R$ 54,99</span>
-        <button onclick="adicionarAoCarrinho('Conjunto Tip')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Conjunto Tip." target="_blank">Comprar</a>
-      </div>
-
-      
-      <div class="block">
-        <img src="Blusa assimetrica com gola.jpg" alt="Blusa Assimétrica com gola" class="block-image" onclick="contarClique('Blusa Assimétrica com gola')">
-        <p>Blusa Assimétrica com gola</p>
-        <span class="preco">R$ 55,00</span>
-        <button onclick="adicionarAoCarrinho('Blusa Assimétrica com gola')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Blusa Assimétrica com gola." target="_blank">Comprar</a>
-      </div>
-
-      <div class="block">
-        <img src="blusa assimetrica.jpg" alt="Blusa Assimétrica" class="block-image" onclick="contarClique('Blusa Assimétrica')">
-        <p>Blusa Assimétrica</p>
-        <span class="preco">R$ 50,00</span>
-        <button onclick="adicionarAoCarrinho('Blusa Assimétrica')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Blusa Assimétrica." target="_blank">Comprar</a>
-      </div>
-
-      <div class="block">
-        <img src="cropped assimetrico.jpg" alt="Cropped assimétrico" class="block-image" onclick="contarClique('Conjunto Luma')">
-        <p>Cropped assimétrico</p>
-        <span class="preco">R$ 45,00</span>
-        <button onclick="adicionarAoCarrinho('Cropped assimétrico')" class="buy-button">Adicionar ao carrinho</button><br>
-        <a class="buy-button" href="https://wa.me/5563992887772?text=Olá! Quero comprar o Cropped assimétrico." target="_blank">Comprar</a>
-      </div>
-
+<header class="top-bar">
+  <img src="closet.jpg" alt="Logo da Loja Rosê" class="logo">
+  <h1>Closet Da Nil💕</h1>
+  <div class="icons">
+    <div class="icon-wrapper" onclick="toggleCarrinho()">
+      🛒 <span id="carrinho-count" class="badge">0</span>
+      <ul id="dropdown-carrinho" class="dropdown"></ul>
     </div>
   </div>
+</header>
 
-  <footer class="footer">
-    <p>Entre em contato:</p>
-    <p>
-      📱 <a href="https://wa.me/5563992887772" target="_blank">WhatsApp</a> |
-      📸 <a href="https://instagram.com/_closetdanil/" target="_blank">Instagram</a>
-    </p>
-    <p>📍 Dianópolis - TO</p>
-    <p>&copy; 2025 Closet Da Nil✨</p>
-  </footer>
+<div class="section">
+  <h2>🛍️ Nossos Produtos✨</h2>
+  <div class="container">
+
+    <div class="block">
+      <img src="vestido flor.jpg" alt="Vestido Flor" onclick="adicionarAoCarrinho('Vestido Flor')">
+      <p>Vestido Flor</p>
+      <span class="preco">R$ 149,99</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Vestido Flor')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="conjunto luma.jpg" alt="Conjunto Luma" onclick="adicionarAoCarrinho('Conjunto Luma')">
+      <p>Conjunto Luma</p>
+      <span class="preco">R$ 119,99</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Conjunto Luma')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="vestido vitrine.jpg" alt="Vestido Vitrine" onclick="adicionarAoCarrinho('Vestido Vitrine')">
+      <p>Vestido Vitrine</p>
+      <span class="preco">R$ 99,99</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Vestido Vitrine')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="conjunto tip.jpg" alt="Conjunto Tip" onclick="adicionarAoCarrinho('Conjunto Tip')">
+      <p>Conjunto Tip</p>
+      <span class="preco">R$ 54,99</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Conjunto Tip')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="Blusa assimetrica com gola.jpg" alt="Blusa Assimétrica com gola" onclick="adicionarAoCarrinho('Blusa Assimétrica com gola')">
+      <p>Blusa Assimétrica com gola</p>
+      <span class="preco">R$ 55,00</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Blusa Assimétrica com gola')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="blusa assimetrica.jpg" alt="Blusa Assimétrica" onclick="adicionarAoCarrinho('Blusa Assimétrica')">
+      <p>Blusa Assimétrica</p>
+      <span class="preco">R$ 50,00</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Blusa Assimétrica')">Adicionar ao carrinho</button>
+    </div>
+
+    <div class="block">
+      <img src="cropped assimetrico.jpg" alt="Cropped assimétrico" onclick="adicionarAoCarrinho('Cropped assimétrico')">
+      <p>Cropped assimétrico</p>
+      <span class="preco">R$ 45,00</span>
+      <button class="buy-button" onclick="adicionarAoCarrinho('Cropped assimétrico')">Adicionar ao carrinho</button>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <p>Entre em contato:</p>
+  <p>
+    📱 <a href="https://wa.me/5563992887772" target="_blank">WhatsApp</a> |
+    📸 <a href="https://instagram.com/_closetdanil/" target="_blank">Instagram</a>
+  </p>
+  <p>📍 Dianópolis - TO</p>
+  <p>&copy; 2025 Closet Da Nil✨</p>
+</footer>
+
+<script>
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+const produtos = {
+  "Vestido Flor": { preco: "R$ 149,99", img: "vestido flor.jpg" },
+  "Conjunto Luma": { preco: "R$ 119,99", img: "conjunto luma.jpg" },
+  "Vestido Vitrine": { preco: "R$ 99,99", img: "vestido vitrine.jpg" },
+  "Conjunto Tip": { preco: "R$ 54,99", img: "conjunto tip.jpg" },
+  "Blusa Assimétrica com gola": { preco: "R$ 55,00", img: "Blusa assimetrica com gola.jpg" },
+  "Blusa Assimétrica": { preco: "R$ 50,00", img: "blusa assimetrica.jpg" },
+  "Cropped assimétrico": { preco: "R$ 45,00", img: "cropped assimetrico.jpg" }
+};
+
+function adicionarAoCarrinho(nome) {
+  if(!produtos[nome]) return alert("Produto não encontrado!");
+  carrinho.push(nome);
+  salvarCarrinho();
+  atualizarCarrinho();
+}
+
+function removerDoCarrinho(index) {
+  carrinho.splice(index,1);
+  salvarCarrinho();
+  atualizarCarrinho();
+}
+
+function salvarCarrinho() {
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+}
+
+function atualizarCarrinho() {
+  const lista = document.getElementById("dropdown-carrinho");
+  lista.innerHTML = "";
+  if(carrinho.length === 0){
+    lista.innerHTML = "<li>Carrinho vazio</li>";
+    document.getElementById("carrinho-count").innerText = "0";
+    return;
+  }
+  carrinho.forEach((item,index)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <img src="${produtos[item].img}" class="mini-img" alt="${item}">
+      <span>${item} - ${produtos[item].preco}</span>
+      <button class="remove-button" onclick="removerDoCarrinho(${index})">❌</button>
+    `;
+    lista.appendChild(li);
+  });
+  const liFinal = document.createElement("li");
+  liFinal.innerHTML = `<button class="buy-button" onclick="finalizarCarrinho()">Finalizar Compra</button>`;
+  lista.appendChild(liFinal);
+
+  document.getElementById("carrinho-count").innerText = carrinho.length;
+}
+
+function finalizarCarrinho() {
+  if(carrinho.length === 0){ alert("Carrinho vazio!"); return; }
+  const texto = encodeURIComponent("Quero comprar: "+carrinho.join(", "));
+  carrinho = [];
+  salvarCarrinho();
+  atualizarCarrinho();
+  window.open("https://wa.me/5563992887772?text="+texto,"_blank");
+}
+
+function toggleCarrinho() {
+  const dropdown = document.getElementById("dropdown-carrinho");
+  dropdown.style.display = dropdown.style.display==="block" ? "none":"block";
+}
+
+window.onload = atualizarCarrinho;
+</script>
+
 </body>
 </html>
