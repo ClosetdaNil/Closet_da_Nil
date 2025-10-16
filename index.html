@@ -8,7 +8,7 @@
 <style>
 /* Estilo base já fornecido pelo usuário */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #fff6fb;
   margin: 0;
   padding: 0;
@@ -27,15 +27,17 @@ body {
   padding: 10px;
   text-align: center;
   position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .top-bar h1 {
   color: white;
   font-size: 2rem;
   margin: 0;
+  letter-spacing: 1px;
 }
 
-/* Ícones do carrinho */
+/* ===== ÍCONES ===== */
 .icons {
   position: absolute;
   top: 10px;
@@ -48,68 +50,110 @@ body {
   position: relative;
   cursor: pointer;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
+  transition: 0.3s;
+}
+.icon-wrapper:hover {
+  transform: scale(1.1);
 }
 
 .badge {
   position: absolute;
-  top: -10px;
+  top: -8px;
   right: -10px;
   background-color: #d63384;
   color: white;
   border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 0.8rem;
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Dropdown do carrinho */
+/* ===== DROPDOWN DO CARRINHO ===== */
 .dropdown {
   display: none;
   position: absolute;
   right: 0;
-  top: 40px;
-  background-color: white;
-  color: black;
-  width: 300px;
-  max-height: 350px;
+  top: 45px;
+  background-color: #ffffff;
+  color: #333;
+  width: 320px;
+  max-height: 380px;
   overflow-y: auto;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 10px 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
   list-style: none;
   z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 .dropdown li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: #fafafa;
+  transition: 0.2s;
+}
+
+.dropdown li:hover {
+  background-color: #ffe6f2;
 }
 
 .mini-img {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
   object-fit: cover;
-  border-radius: 5px;
   margin-right: 10px;
 }
 
-.remove-button {
-  background-color: #ff69b4;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 2px 6px;
-  cursor: pointer;
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
   font-size: 0.9rem;
 }
 
+.item-info span:first-child {
+  font-weight: 600;
+  color: #d63384;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #d63384;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
 .remove-button:hover {
+  transform: scale(1.2);
+}
+
+/* Botão de finalizar */
+.finalizar-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.finalizar-btn:hover {
   background-color: #e055a0;
 }
 
-/* Seção de produtos */
+/* ===== Seção Produtos ===== */
 .section {
   padding: 40px 20px;
   text-align: center;
@@ -124,11 +168,15 @@ body {
 
 .block {
   background-color: white;
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 20px;
   width: 260px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   text-align: center;
+  transition: 0.3s;
+}
+.block:hover {
+  transform: translateY(-4px);
 }
 
 .block img {
@@ -142,6 +190,7 @@ body {
   font-weight: bold;
   font-size: 1.1rem;
   margin-bottom: 5px;
+  color: #222;
 }
 
 .preco {
@@ -152,21 +201,20 @@ body {
 }
 
 .buy-button {
-  display: inline-block;
   background-color: #ff69b4;
   color: white;
   padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 6px;
+  border: none;
+  border-radius: 8px;
   font-weight: bold;
-  margin-top: 10px;
   cursor: pointer;
+  transition: 0.3s;
 }
-
 .buy-button:hover {
   background-color: #e055a0;
 }
 
+/* ===== Footer ===== */
 .footer {
   background-color: #ff99cc;
   color: white;
@@ -179,14 +227,14 @@ body {
   text-decoration: underline;
 }
 
-/* ===== Botão flutuante WhatsApp ===== */
-    .whatsapp-btn {
-      position:fixed; bottom:90px; right:20px;
-      background:#dd43aa; padding:15px 20px; border-radius:50px;
-      color:white; font-weight:bold; text-decoration:none; box-shadow:0 5px 15px rgba(0,0,0,0.3);
-      transition:0.3s;
-    }
-    .whatsapp-btn:hover { background:#dd43aa; }
+/* ===== WhatsApp ===== */
+.whatsapp-btn {
+  position:fixed; bottom:90px; right:20px;
+  background:#dd43aa; padding:15px 20px; border-radius:50px;
+  color:white; font-weight:bold; text-decoration:none; box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+.whatsapp-btn:hover { background:#c73294; }
   
 </style>
 </head>
@@ -288,19 +336,16 @@ const produtos = {
   "Vestido Flor": { preco: "R$ 149,99", img: "vestido flor.jpg" },
   "Conjunto Luma": { preco: "R$ 119,99", img: "conjunto luma.jpg" },
   "Vestido Vitrine": { preco: "R$ 99,99", img: "vestido vitrine.jpg" },
-  "Blusa Assimétrica com gola": { preco: "R$ 55,00", img: "Blusa assimetrica com gola.jpg" },
+  "Conjunto Tip": { preco: "R$ 54,99", img: "conjunto tip.jpg" },
+  "Blusa Assimétrica com gola": { preco: "R$ 55,00", img: "blusa assimetrica com gola.jpg" },
   "Blusa Assimétrica": { preco: "R$ 50,00", img: "blusa assimetrica.jpg" },
-  "Cropped assimétrico": { preco: "R$ 45,00", img: "cropped assimetrico.jpg" },
   "Body Lizz": { preco: "R$ 50,49", img: "body lizz.jpg" },
   "Body Celine": { preco: "R$ 55,50", img: "body celine.jpg" },
+  "Body Tallas": { preco: "R$ 50,49", img: "body tallas.jpg" },
   "Short Alfaiataria": { preco: "R$ 75,50", img: "short alfaiataria.jpg" }
 };
 
 function adicionarAoCarrinho(nome) {
-  if (!produtos[nome]) {
-    alert("Produto não encontrado: " + nome);
-    return;
-  }
   carrinho.push(nome);
   salvarCarrinho();
   atualizarCarrinho();
@@ -320,26 +365,30 @@ function atualizarCarrinho() {
   const lista = document.getElementById("dropdown-carrinho");
   lista.innerHTML = "";
   if (carrinho.length === 0) {
-    lista.innerHTML = "<li>Carrinho vazio</li>";
+    lista.innerHTML = "<li style='text-align:center; padding:15px;'>Seu carrinho está vazio 🛍️</li>";
     document.getElementById("carrinho-count").innerText = "0";
     return;
   }
 
   carrinho.forEach((item, index) => {
     const produto = produtos[item];
-    if (!produto) return; // evita erro se o nome estiver incorreto
+    if (!produto) return;
 
     const li = document.createElement("li");
     li.innerHTML = `
       <img src="${produto.img}" class="mini-img" alt="${item}">
-      <span>${item} - ${produto.preco}</span>
-      <button class="remove-button" onclick="removerDoCarrinho(${index})">❌</button>
+      <div class="item-info">
+        <span>${item}</span>
+        <small>${produto.preco}</small>
+      </div>
+      <button class="remove-button" onclick="removerDoCarrinho(${index})">✕</button>
     `;
     lista.appendChild(li);
   });
 
   const liFinal = document.createElement("li");
-  liFinal.innerHTML = `<button class="buy-button" onclick="finalizarCarrinho()">Finalizar Compra</button>`;
+  liFinal.style.background = "none";
+  liFinal.innerHTML = `<button class="finalizar-btn" onclick="finalizarCarrinho()">Finalizar Compra</button>`;
   lista.appendChild(liFinal);
 
   document.getElementById("carrinho-count").innerText = carrinho.length;
